@@ -81,8 +81,21 @@ function submitPresensi(payload) {
     let statusWaktu = "-";
     
     if (payload.tipe === "Masuk") {
-      const targetTimeStr = userTarget.jam_masuk_target; // Format expected "HH:mm"
-      const [tHours, tMinutes] = targetTimeStr.split(":").map(Number);
+      let tHours = 8, tMinutes = 0;
+      
+      // Jika Google Sheets mengembalikan objek Date
+      if (typeof userTarget.jam_masuk_target === "object" && userTarget.jam_masuk_target instanceof Date) {
+        tHours = userTarget.jam_masuk_target.getHours();
+        tMinutes = userTarget.jam_masuk_target.getMinutes();
+      } else {
+        // Jika format string "HH:mm" atau lainnya
+        const timeStr = String(userTarget.jam_masuk_target);
+        if (timeStr.includes(":")) {
+          const parts = timeStr.split(":");
+          tHours = Number(parts[0]);
+          tMinutes = Number(parts[1]);
+        }
+      }
       
       const targetDate = new Date();
       targetDate.setHours(tHours, tMinutes, 0, 0);
