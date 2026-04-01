@@ -47,21 +47,19 @@ function decodeBase64Image(base64Str, filename) {
     const contentType = base64Str.substring(base64Str.indexOf(":") + 1, base64Str.indexOf(";"));
     const bytes = Utilities.base64Decode(base64Str.split(",")[1]);
     const blob = Utilities.newBlob(bytes, contentType, filename);
+    
+    // Simpan file
     const file = folder.createFile(blob);
     
-    // Cegah error jika organisasi Google Workspace menutup Izin "Anyone with link"
-    try {
-      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    } catch (shareErr) {
-      Logger.log("Peringatan: Gagal set sharing public, link tetap ada. " + shareErr);
-    }
-    
+    // Langsung ambil URL-nya (Tanpa perlu setSharing ke publik)
     return file.getUrl();
+
   } catch (e) {
     Logger.log("Error saving photo: " + e.toString());
     return "Error: " + e.toString();
   }
 }
+
 
 /**
  * Fungsi Utama Presensi (Masuk/Pulang)
@@ -227,6 +225,11 @@ function checkStatus(nik) {
  * doPost Handler
  * Endpoint utama untuk Integrasi Frontend
  */
+function pancingIzinLengkap() {
+  DriveApp.createFile("tes_izin.txt", "OK");
+}
+
+
 function doPost(e) {
   let requestData;
   try {
