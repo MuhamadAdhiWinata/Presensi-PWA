@@ -173,7 +173,14 @@ function decodeBase64Image(base64Str, filename) {
     const bytes = Utilities.base64Decode(base64Str.split(",")[1]);
     const blob = Utilities.newBlob(bytes, contentType, filename);
     const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // Cegah error jika organisasi Google Workspace menutup Izin "Anyone with link"
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareErr) {
+      Logger.log("Peringatan: Gagal set sharing public, link tetap ada. " + shareErr);
+    }
+    
     return file.getUrl();
   } catch (e) {
     Logger.log("Error saving photo: " + e.toString());
