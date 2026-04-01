@@ -14,15 +14,15 @@
         >
           <img src="/icon-192.png" alt="Presensi" class="w-16 h-16 rounded-2xl grayscale brightness-125 transition-all group-hover:grayscale-0 group-hover:brightness-100" />
         </div>
-        <h1 class="text-3xl font-black text-white tracking-tighter">System Access</h1>
-        <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-2">Enter credentials to continue</p>
+        <h1 class="text-3xl font-black text-white tracking-tighter">Sistem Absensi</h1>
+        <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-2">Masukkan kredensial Anda</p>
       </div>
 
       <!-- Card -->
       <div class="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 space-y-6 shadow-2xl">
         <div class="space-y-1.5">
           <label for="nik" class="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">
-            Employment ID (NIK)
+            Nomor Induk Karyawan (NIK)
           </label>
           <input
             id="nik"
@@ -39,7 +39,7 @@
 
         <div class="space-y-1.5">
           <label for="pin" class="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">
-            Security PIN
+            PIN Keamanan
           </label>
           <input
             id="pin"
@@ -71,9 +71,9 @@
         >
           <span v-if="isAuthenticating" class="flex items-center justify-center gap-2">
             <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            Authenticating...
+            Memverifikasi...
           </span>
-          <span v-else>Access Dashboard</span>
+          <span v-else>Masuk Aplikasi</span>
         </button>
 
         <div class="pt-4 mt-2 text-center border-t border-white/5">
@@ -86,7 +86,7 @@
       </div>
 
       <p class="text-center text-[10px] font-black text-slate-600 tracking-[0.2em] uppercase mt-10">
-        Attendance System v2.0 • Secured
+        Sistem Absensi v2.0 • Aman
       </p>
     </div>
   </div>

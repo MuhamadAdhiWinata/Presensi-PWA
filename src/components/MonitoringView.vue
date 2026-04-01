@@ -10,8 +10,8 @@
             </svg>
           </router-link>
           <div>
-            <h1 class="text-xl font-black tracking-tight">Monitoring Presensi</h1>
-            <p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Admin Dashboard • Real-time</p>
+            <h1 class="text-xl font-black tracking-tight">Pemantauan Presensi</h1>
+            <p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Dashboard Admin • Real-time</p>
           </div>
         </div>
         <button 
@@ -68,7 +68,7 @@
 
       <!-- Stats Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard title="Total User" :value="stats.total" color="blue" />
+        <StatCard title="Karyawan" :value="stats.total" color="blue" />
         <StatCard title="Sudah Absen" :value="stats.sudah" color="green" />
         <StatCard title="Belum Absen" :value="stats.belum" color="red" />
         <StatCard title="Persentase" :value="stats.percent + '%'" color="indigo" />

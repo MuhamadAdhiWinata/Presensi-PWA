@@ -4,7 +4,7 @@
     <header class="sticky top-0 z-20 backdrop-blur-md bg-slate-900/70 border-b border-white/10 px-4 pt-10 pb-6 shadow-2xl">
       <div class="max-w-md mx-auto flex items-center justify-between">
         <div>
-          <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Authenticated User</p>
+          <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Pengguna Terautentikasi</p>
           <h1 class="text-xl font-extrabold truncate max-w-[200px] tracking-tight">{{ user?.nama }}</h1>
           <p class="text-slate-400 text-xs mt-0.5 font-medium">{{ user?.role }} • {{ user?.nik }}</p>
         </div>
@@ -36,12 +36,12 @@
       <!-- Date Info -->
       <div class="bg-indigo-600/20 border border-indigo-500/20 rounded-3xl p-5 flex items-center justify-between">
         <div>
-          <h3 class="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Today's Schedule</h3>
+          <h3 class="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Jadwal Hari Ini</h3>
           <p class="text-lg font-bold">{{ currentDate }}</p>
         </div>
         <div class="text-right">
-          <span class="block text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Shift Start</span>
-          <p class="text-lg font-bold">{{ user?.jam_masuk_target }}</p>
+          <span class="block text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Target Masuk</span>
+          <p class="text-lg font-bold">{{ formatJamMasuk }}</p>
         </div>
       </div>
 
@@ -54,14 +54,14 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               </svg>
             </div>
-            <h2 class="font-bold text-sm tracking-tight">Real-time Location</h2>
+            <h2 class="font-bold text-sm tracking-tight">Lokasi Saat Ini</h2>
           </div>
           <button
             class="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full hover:bg-blue-500/20 transition disabled:opacity-30"
             :disabled="geoLoading"
             @click="refreshLocation"
           >
-            Refresh
+            Segarkan
           </button>
         </div>
 
@@ -80,7 +80,7 @@
         <div v-else-if="coords" class="space-y-4">
           <div class="flex items-center justify-between">
             <div class="space-y-1">
-              <p class="text-slate-400 text-xs font-medium uppercase tracking-tight">Distance to Target</p>
+              <p class="text-slate-400 text-xs font-medium uppercase tracking-tight">Jarak Titik Absen</p>
               <p class="text-3xl font-black italic tracking-tighter" :class="isWithinRadius ? 'text-green-400' : 'text-red-400'">
                 {{ distanceText }}
               </p>
@@ -90,11 +90,11 @@
               :class="isWithinRadius ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'"
             >
               <span class="w-2 h-2 rounded-full" :class="isWithinRadius ? 'bg-green-500 animate-pulse' : 'bg-red-500'" />
-              {{ isWithinRadius ? 'Safe Zone' : 'Restricted' }}
+              {{ isWithinRadius ? 'Zona Aman' : 'Di Luar Batas' }}
             </div>
           </div>
           <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-            Accuracy: ±{{ Math.round(coords.accuracy) }}m • Max: {{ maxRadius }}m
+            Akurasi: ±{{ Math.round(coords.accuracy) }}m • Maks: {{ maxRadius }}m
           </p>
         </div>
       </section>
@@ -102,11 +102,11 @@
       <!-- Camera Section -->
       <section class="space-y-4">
         <div class="flex items-center justify-between px-1">
-          <h2 class="font-bold text-sm text-slate-300 tracking-tight">Camera Verification</h2>
+          <h2 class="font-bold text-sm text-slate-300 tracking-tight">Verifikasi Kamera</h2>
           <span v-if="fotoBase64" class="text-[10px] font-bold text-green-400 uppercase tracking-widest flex items-center gap-1">
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg> Image Captured
+            </svg> Foto Diambil
           </span>
         </div>
         
@@ -146,7 +146,7 @@
               class="bg-red-500/90 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-xl active:scale-95 transition"
               @click="resetCamera"
             >
-              Retake Photo
+              Ambil Ulang
             </button>
           </div>
         </div>
@@ -189,8 +189,8 @@
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
              </svg>
            </div>
-           <p class="text-sm font-bold text-slate-300">Shift Completed Today</p>
-           <p class="text-xs text-slate-500 mt-1">Thank you for your hard work!</p>
+           <p class="text-sm font-bold text-slate-300">Selesai Beraktivitas Hari Ini</p>
+           <p class="text-xs text-slate-500 mt-1">Terima kasih atas kerja keras Anda!</p>
         </div>
         
         <button
@@ -208,8 +208,8 @@
           </svg>
           <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           
-          <span v-if="isSubmitting">Transmitting...</span>
-          <span v-else>{{ dailyStatus === 'Belum' ? 'Clock In Now' : 'Clock Out Now' }}</span>
+          <span v-if="isSubmitting">Memproses...</span>
+          <span v-else>{{ dailyStatus === 'Belum' ? 'Absen Masuk' : 'Absen Pulang' }}</span>
         </button>
 
         <!-- Condition Info -->
@@ -220,7 +220,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span :class="`text-[11px] font-bold uppercase tracking-tight ${fotoBase64 ? 'text-slate-300' : 'text-slate-600'}`">Selfie verification captured</span>
+            <span :class="`text-[11px] font-bold uppercase tracking-tight ${fotoBase64 ? 'text-slate-300' : 'text-slate-600'}`">Verifikasi selfie telah diambil</span>
           </div>
           <div class="flex items-center gap-2 px-1">
             <div :class="`w-4 h-4 rounded-full flex items-center justify-center ${isWithinRadius ? 'bg-green-500 text-white' : 'bg-slate-700 text-slate-500'}`">
@@ -228,7 +228,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span :class="`text-[11px] font-bold uppercase tracking-tight ${isWithinRadius ? 'text-slate-300' : 'text-slate-600'}`">Within {{ maxRadius }}m safe zone ({{ distanceText }})</span>
+            <span :class="`text-[11px] font-bold uppercase tracking-tight ${isWithinRadius ? 'text-slate-300' : 'text-slate-600'}`">Dalam {{ maxRadius }}m zona aman ({{ distanceText }})</span>
           </div>
         </div>
       </div>
@@ -255,6 +255,18 @@ const isWithinRadius = computed(() => {
   return distance.value <= maxRadius
 })
 
+const formatJamMasuk = computed(() => {
+  const jam = user.value?.jam_masuk_target;
+  if (!jam) return '-';
+  if (String(jam).includes('T')) {
+    const d = new Date(String(jam));
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m} WIB`;
+  }
+  return `${jam} WIB`;
+})
+
 // Presensi
 const { isSubmitting, submitStatus, submitMessage, dailyStatus, checkTodayStatus, submit, resetStatus } = usePresensi()
 
@@ -266,7 +278,7 @@ const fotoBase64 = ref('')
 const stream = ref<MediaStream | null>(null)
 
 const currentDate = computed(() => {
-  return new Date().toLocaleDateString('en-US', {
+  return new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
