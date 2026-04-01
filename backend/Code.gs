@@ -52,7 +52,7 @@ function decodeBase64Image(base64Str, filename) {
     return file.getUrl();
   } catch (e) {
     Logger.log("Error saving photo: " + e.toString());
-    return "";
+    return "Error: " + e.toString();
   }
 }
 
