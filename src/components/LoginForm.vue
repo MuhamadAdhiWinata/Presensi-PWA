@@ -1,22 +1,28 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-blue-50 px-4 py-8">
-    <div class="w-full max-w-sm">
+  <div class="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-8 overflow-hidden relative">
+    <!-- Abstract background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600 rounded-full blur-[120px]" />
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-900 rounded-full blur-[120px]" />
+    </div>
+
+    <div class="w-full max-w-sm relative z-10 transition-all duration-700" :class="{ 'opacity-0 translate-y-4': !isMounted }">
       <!-- Header -->
-      <div class="text-center mb-8">
+      <div class="text-center mb-10">
         <div
-          class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-800 shadow-lg mb-4"
+          class="inline-flex items-center justify-center w-24 h-24 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl mb-6 group transition-transform hover:scale-105"
         >
-          <img src="/icon-192.png" alt="Presensi" class="w-14 h-14 rounded-2xl" />
+          <img src="/icon-192.png" alt="Presensi" class="w-16 h-16 rounded-2xl grayscale brightness-125 transition-all group-hover:grayscale-0 group-hover:brightness-100" />
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Selamat Datang</h1>
-        <p class="text-gray-500 text-sm mt-1">Masukkan identitas Anda untuk mulai</p>
+        <h1 class="text-3xl font-black text-white tracking-tighter">System Access</h1>
+        <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-2">Enter credentials to continue</p>
       </div>
 
       <!-- Card -->
-      <div class="bg-white rounded-3xl shadow-xl p-6 space-y-5">
-        <div>
-          <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1.5">
-            NIK Karyawan
+      <div class="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 space-y-6 shadow-2xl">
+        <div class="space-y-1.5">
+          <label for="nik" class="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">
+            Employment ID (NIK)
           </label>
           <input
             id="nik"
@@ -24,80 +30,109 @@
             type="text"
             inputmode="numeric"
             pattern="[0-9]*"
-            placeholder="Masukkan NIK Anda"
+            placeholder="00000000"
             maxlength="20"
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-base"
+            class="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all text-sm font-bold tracking-wider"
             @keyup.enter="handleSubmit"
           />
         </div>
 
-        <div>
-          <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1.5">
-            Nama Lengkap
+        <div class="space-y-1.5">
+          <label for="pin" class="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">
+            Security PIN
           </label>
           <input
-            id="nama"
-            v-model="nama"
-            type="text"
-            placeholder="Masukkan nama lengkap Anda"
-            maxlength="60"
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-base"
+            id="pin"
+            v-model="pin"
+            type="password"
+            inputmode="numeric"
+            placeholder="••••••"
+            maxlength="6"
+            class="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all text-sm font-bold tracking-widest"
             @keyup.enter="handleSubmit"
           />
         </div>
 
-        <!-- Error message -->
-        <p v-if="errorMsg" class="text-red-500 text-sm text-center">{{ errorMsg }}</p>
+        <!-- Error feedback -->
+        <Transition name="fade">
+            <div v-if="authError || localError" class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
+                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z" />
+                </svg>
+                <p class="text-red-400 text-xs font-bold leading-none">{{ authError || localError }}</p>
+            </div>
+        </Transition>
 
         <button
           type="button"
-          :disabled="isLoading"
-          class="w-full py-3.5 rounded-xl bg-blue-800 text-white font-semibold text-base shadow-md active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          :disabled="isAuthenticating"
+          class="w-full py-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
           @click="handleSubmit"
         >
-          <span v-if="isLoading">Menyimpan...</span>
-          <span v-else>Mulai Absensi →</span>
+          <span v-if="isAuthenticating" class="flex items-center justify-center gap-2">
+            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Authenticating...
+          </span>
+          <span v-else>Access Dashboard</span>
         </button>
+
+        <div class="pt-4 mt-2 text-center border-t border-white/5">
+          <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Akun Demo (Testing)</p>
+          <div class="flex justify-center gap-4 text-[10px] font-mono font-bold text-slate-400">
+            <span>NIK: <span class="text-white">12345</span></span>
+            <span>PIN: <span class="text-white">123456</span></span>
+          </div>
+        </div>
       </div>
 
-      <p class="text-center text-xs text-gray-400 mt-6">
-        Data disimpan hanya di perangkat ini
+      <p class="text-center text-[10px] font-black text-slate-600 tracking-[0.2em] uppercase mt-10">
+        Attendance System v2.0 • Secured
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuth } from '../composables/useAuth'
 
-const { saveUser } = useAuth()
+const { login, isAuthenticating, authError } = useAuth()
 
+const isMounted = ref(false)
 const nik = ref('')
-const nama = ref('')
-const errorMsg = ref('')
-const isLoading = ref(false)
+const pin = ref('')
+const localError = ref('')
 
-function handleSubmit() {
-  errorMsg.value = ''
+async function handleSubmit() {
+  localError.value = ''
 
   if (!nik.value.trim()) {
-    errorMsg.value = 'NIK tidak boleh kosong.'
+    localError.value = 'NIK REQUIRED'
     return
   }
-  if (!nama.value.trim()) {
-    errorMsg.value = 'Nama tidak boleh kosong.'
+  if (!pin.value.trim()) {
+    localError.value = 'PIN REQUIRED'
     return
   }
   if (!/^\d+$/.test(nik.value.trim())) {
-    errorMsg.value = 'NIK hanya boleh berisi angka.'
+    localError.value = 'INVALID NIK FORMAT'
     return
   }
 
-  isLoading.value = true
-  setTimeout(() => {
-    saveUser(nik.value, nama.value)
-    isLoading.value = false
-  }, 400)
+  await login(nik.value.trim(), pin.value.trim())
 }
+
+onMounted(() => {
+    setTimeout(() => isMounted.value = true, 100)
+})
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>

@@ -1,25 +1,39 @@
 import { ref } from 'vue'
 
-// ===================================================
-// TODO: Ganti dengan URL Google Apps Script Anda
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhR20YcrZgjc5jhEVq0VWzrTLYuVnC_LKxr6LA9-65v1eQM7OX1XjKunxFy7JbBQ9l/exec'
-// ===================================================
+const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL
 
 export interface PresensiPayload {
     nik: string
-    nama: string
-    qrData: string
-    latitude: number
-    longitude: number
-    timestamp: string
+    tipe: 'Masuk' | 'Pulang'
+    fotoBase64: string
+    jarak_meter: number
+    lat_absen: number
+    lng_absen: number
 }
 
 export type SubmitStatus = 'idle' | 'loading' | 'success' | 'error'
+export type DailyStatus = 'Belum' | 'Masuk' | 'Pulang'
 
 export function usePresensi() {
     const isSubmitting = ref(false)
     const submitStatus = ref<SubmitStatus>('idle')
     const submitMessage = ref('')
+    const dailyStatus = ref<DailyStatus>('Belum')
+
+    async function checkTodayStatus(nik: string) {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'checkStatus', nik })
+            })
+            const result = await response.json()
+            if (result.success) {
+                dailyStatus.value = result.status
+            }
+        } catch (err) {
+            console.error('Gagal cek status harian:', err)
+        }
+    }
 
     async function submit(payload: PresensiPayload): Promise<boolean> {
         isSubmitting.value = true
@@ -29,19 +43,25 @@ export function usePresensi() {
         try {
             const response = await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Google Apps Script requires no-cors
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({
+                    action: 'submit',
+                    ...payload
+                }),
             })
 
-            // With no-cors, response.type === 'opaque', we can't read the body.
-            // Assume success if no network error was thrown.
-            void response
-            submitStatus.value = 'success'
-            submitMessage.value = 'Presensi berhasil dikirim! ✅'
-            return true
+            const result = await response.json()
+
+            if (result.success) {
+                submitStatus.value = 'success'
+                submitMessage.value = result.message || 'Presensi berhasil dikirim! ✅'
+                // Update status locally after success
+                dailyStatus.value = payload.tipe
+                return true
+            } else {
+                submitStatus.value = 'error'
+                submitMessage.value = result.message || 'Gagal mengirim presensi.'
+                return false
+            }
         } catch (err: unknown) {
             submitStatus.value = 'error'
             submitMessage.value =
@@ -57,5 +77,5 @@ export function usePresensi() {
         submitMessage.value = ''
     }
 
-    return { isSubmitting, submitStatus, submitMessage, submit, resetStatus }
+    return { isSubmitting, submitStatus, submitMessage, dailyStatus, checkTodayStatus, submit, resetStatus }
 }

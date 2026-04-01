@@ -1,12 +1,5 @@
 import { ref, computed } from 'vue'
 
-// ===================================================
-// Koordinat Kantor
-const OFFICE_LAT = -7.8218869203045    // Latitude Kantor
-const OFFICE_LNG = 110.37736824531457  // Longitude Kantor
-const RADIUS_METERS = 50
-// ===================================================
-
 export interface Coords {
     latitude: number
     longitude: number
@@ -36,6 +29,7 @@ export function useGeolocation() {
     const distance = ref<number | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
+    const RADIUS_METERS = 100 // Updated default radius
 
     const isWithinRadius = computed(() => {
         if (distance.value === null) return false
@@ -48,7 +42,7 @@ export function useGeolocation() {
         return `${(distance.value / 1000).toFixed(1)} km`
     })
 
-    function fetchLocation(): Promise<void> {
+    function fetchLocation(targetLat: number, targetLng: number): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
                 error.value = 'Geolocation tidak didukung browser ini'
@@ -69,8 +63,8 @@ export function useGeolocation() {
                     distance.value = haversineDistance(
                         position.coords.latitude,
                         position.coords.longitude,
-                        OFFICE_LAT,
-                        OFFICE_LNG,
+                        targetLat,
+                        targetLng,
                     )
                     isLoading.value = false
                     resolve()
@@ -109,8 +103,6 @@ export function useGeolocation() {
         isLoading,
         error,
         fetchLocation,
-        OFFICE_LAT,
-        OFFICE_LNG,
         RADIUS_METERS,
     }
 }
