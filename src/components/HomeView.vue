@@ -94,7 +94,7 @@
             </div>
           </div>
           <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-            Accuracy: ±{{ Math.round(coords.accuracy) }}m • Max: 50m
+            Accuracy: ±{{ Math.round(coords.accuracy) }}m • Max: {{ maxRadius }}m
           </p>
         </div>
       </section>
@@ -228,7 +228,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span :class="`text-[11px] font-bold uppercase tracking-tight ${isWithinRadius ? 'text-slate-300' : 'text-slate-600'}`">Within 50m safe zone ({{ distanceText }})</span>
+            <span :class="`text-[11px] font-bold uppercase tracking-tight ${isWithinRadius ? 'text-slate-300' : 'text-slate-600'}`">Within {{ maxRadius }}m safe zone ({{ distanceText }})</span>
           </div>
         </div>
       </div>
@@ -247,10 +247,12 @@ const { user, logout } = useAuth()
 // Geolocation
 const { coords, distance, distanceText, isLoading: geoLoading, error: geoError, fetchLocation } = useGeolocation()
 
-// Re-enforce 50m radius strictly as per user request
+// Re-enforce strictly as per user request, defaulting to 50 if undefined
+const maxRadius = Number(import.meta.env.VITE_MAX_RADIUS_METERS || 50)
+
 const isWithinRadius = computed(() => {
   if (distance.value === null) return false
-  return distance.value <= 50
+  return distance.value <= maxRadius
 })
 
 // Presensi

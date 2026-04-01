@@ -21,10 +21,14 @@ npm run build
 
 ### 2. Konfigurasi Lingkungan (Environment)
 
-Buat file `.env` di root project Anda (salin dari `.env.example` jika ada) dan masukkan URL Apps Script (Google Spreadsheet) Anda:
+Buat file `.env` di root project Anda (salin dari `.env.example` jika ada) dan masukkan konfigurasi berikut:
 
 ```env
+# URL Apps Script dari deploy baru Anda
 VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec
+
+# (Opsional) Batas toleransi jarak absensi maksimal (dalam meter), Default: 50
+VITE_MAX_RADIUS_METERS=50
 ```
 
 URL ini didapat setelah mendeploy Apps Script (lihat langkah di bawah).
